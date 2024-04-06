@@ -8,6 +8,18 @@ function BlogEditor() {
         let img=e.target.files[0]
         console.log(img);
     }
+
+    const handleTitleKeyDown=(e)=>{
+        console.log(e);
+        if(e.keyCode==13){
+            e.preventDefault()
+        }
+    }
+    const handleTitleChange=(e)=>{
+        let input=e.target
+        input.style.height='auto'
+        input.style.height=input.scrollHeight+"px"
+    }
   return (
     <>
          <nav className='navbar'>
@@ -36,6 +48,7 @@ function BlogEditor() {
                             <input type="file" id='uploadBanner' accept='.png .jpg .jpeg' hidden onChange={handleBannerUpload}/>
                         </label>
                     </div>
+                    <textarea placeholder='Blog Title' className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40' onKeyDown={handleTitleKeyDown} onChange={handleTitleChange}></textarea>
                 </div>
             </section>
          </AnimationWrapper>
