@@ -3,20 +3,21 @@ import { Link } from 'react-router-dom'
 import logo from "../imgs/logo.png"
 import AnimationWrapper from '../common/page-animation'
 import defaultBanner from "../imgs/blog banner.png"
+import {toast,Toaster} from "react-hot-toast"
 import { EditorContext } from '../pages/Editor.pages'
 import EditorJS from "@editorjs/editorjs"
 import { Tools } from './Tools'
 function BlogEditor() {
 
-    let {blog,blog:{title,banner,content,tags,des},setBlog}=useContext(EditorContext)
+    let {blog,blog:{title,banner,content,tags,des},setBlog,textEditor,setTextEditor,setEditorState}=useContext(EditorContext)
 
     useEffect(()=>{
-        let editor=new EditorJS({
+        setTextEditor(new EditorJS({
             holderId:"textEditor",
             data:'',
             tools:Tools,
             placeholder:"Let's write an awesome story"
-        })
+        }))
     },[])
 
     const handleBannerUpload=(e)=>{
@@ -41,6 +42,27 @@ function BlogEditor() {
         let img=e.target
         img.src=defaultBanner
     }
+    const handlePublishEvent=()=>{
+        if(!banner.length){
+            return toast.error("Upload a blog banner to publish it")
+        }
+        if(!title.length){
+            return toast.error("Write blog title to publish it")
+        }
+        if(textEditor.isReady){
+            textEditor.save().then(data=>{
+                if(data.blocks.length){
+                    setBlog({...blog,content:data})
+                    setEditorState("publish")
+                }else{
+                    return toast.error("Write something in your blog to publish it")
+                }
+            })
+            .catch((err)=>{
+                console.log(err);
+            })
+        }
+    }
   return (
     <>
          <nav className='navbar'>
@@ -53,7 +75,7 @@ function BlogEditor() {
             }
         </p>
         <div className='flex gap-4 ml-auto'>
-            <button className='btn-dark py-2'>
+            <button className='btn-dark py-2' onClick={handlePublishEvent}>
                 Publish
             </button>
             <button className='btn-light py-2'>
@@ -61,6 +83,7 @@ function BlogEditor() {
             </button>
         </div>
          </nav>
+         <Toaster/>
          <AnimationWrapper>
             <section>
                 <div className='mx-auto max-w-[900px] w-full'>
