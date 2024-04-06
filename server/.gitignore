@@ -1,0 +1,15 @@
+node_modules/
+bundle.js
+npm-debug.log
+
+/.idea
+/public
+
+.env
+.passport.js
+.DS_Store
+
+build/
+dist/
+client/.parcel-cache
+blogging-website-18f67-firebase-adminsdk-wkkxo-8b757b6c0d.json
