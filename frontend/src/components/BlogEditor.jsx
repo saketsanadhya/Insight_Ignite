@@ -14,7 +14,7 @@ function BlogEditor() {
     useEffect(()=>{
         setTextEditor(new EditorJS({
             holderId:"textEditor",
-            data:'',
+            data:content,
             tools:Tools,
             placeholder:"Let's write an awesome story"
         }))
@@ -43,9 +43,9 @@ function BlogEditor() {
         img.src=defaultBanner
     }
     const handlePublishEvent=()=>{
-        if(!banner.length){
-            return toast.error("Upload a blog banner to publish it")
-        }
+        // if(!banner.length){
+        //     return toast.error("Upload a blog banner to publish it")
+        // }
         if(!title.length){
             return toast.error("Write blog title to publish it")
         }
@@ -94,7 +94,7 @@ function BlogEditor() {
                             <input type="file" id='uploadBanner' accept='.png .jpg .jpeg' hidden onChange={handleBannerUpload}/>
                         </label>
                     </div>
-                    <textarea placeholder='Blog Title' className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40' onKeyDown={handleTitleKeyDown} onChange={handleTitleChange}></textarea>
+                    <textarea defaultValue={title} placeholder='Blog Title' className='text-4xl font-medium w-full h-20 outline-none resize-none mt-10 leading-tight placeholder:opacity-40' onKeyDown={handleTitleKeyDown} onChange={handleTitleChange}></textarea>
                     <hr className='w-full opacity-10 my-5'/>
                     <div id='textEditor' className='font-gelasio'></div>
                 </div>
