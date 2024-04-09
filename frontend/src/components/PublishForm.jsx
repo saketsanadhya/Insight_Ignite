@@ -106,6 +106,8 @@ function PublishForm() {
               return <Tag tag={tag} key={i} />;
             })}
           </div>
+          <p className="mt-1 mb-4 text-dark-grey text-right">{tagLimit-tags.length} Task left</p>
+           <button className="btn-dark px-8">Publish</button>
         </div>
       </section>
     </AnimationWrapper>
