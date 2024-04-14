@@ -170,6 +170,22 @@ server.post("/google-auth", async (req, res) => {
         return res.status(500).json({"error":"Failed to authenticate you with google.Try with some other google account"})
     })
 });
+
+server.get("/latest-blogs",(req,res)=>{
+  let maxLimit=5
+
+  Blog.find({draft:false})
+  .populate("author","personal_info.profile_img personal_info.username personal_info.fullname -_id" )
+  .sort({"publishedAt":-1})
+  .select("blog_id title des banner activity tags publishedAt -_id")
+  .limit(maxLimit)
+  .then(blogs=>{
+    return res.status(200).json({blogs})
+  })
+  .catch(err=>{
+    return res.status(500).json({error:err.message})
+  })
+})
 server.post("/create-blog",verifyJWT,(req,res)=>{
     let authorId=req.user
     let{title,des,banner,tags,content,draft}=req.body
@@ -180,9 +196,9 @@ server.post("/create-blog",verifyJWT,(req,res)=>{
       if(!des.length || des.length > 200){
         return res.status(403).json({ error: "You must provide blog description under 200 characters" });
       }
-      if(!banner.length){
-        return res.status(403).json({ error: "You must provide blog banner to publish it" });
-      }
+      // if(!banner.length){
+      //   return res.status(403).json({ error: "You must provide blog banner to publish it" });
+      // }
       if(!content.blocks.length){
         return res.status(403).json({ error: "There must be some blog content to publish it" });
       }
