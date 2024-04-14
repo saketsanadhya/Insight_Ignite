@@ -3,6 +3,7 @@ import AnimationWrapper from "../common/page-animation";
 import InPageNavigation from "../components/InPageNavigation";
 import axios from "axios"
 import Loader from "../components/Loader";
+import BlogPostCard from "../components/BlogPostCard";
 function HomePage() {
   let[blogs,setBlog]=useState(null)
   const fetchLatestBlogs=()=>{
@@ -26,7 +27,11 @@ function HomePage() {
                   <>
                     {
                       blogs==null ? <Loader/>:
-                      <h1>Blogs are in state</h1>
+                      blogs.map((blog,i)=>{
+                        return <AnimationWrapper transition={{duration:1,delay:i*.1}} key={i}>
+                          <BlogPostCard content={blog} author={blog.author.personal_info}/>
+                        </AnimationWrapper>
+                      })
                     }
                   </>
                   <h1>Trending blogs here</h1>
