@@ -31,7 +31,7 @@ function HomePage() {
           state: blogs,
           data: data.blogs,
           page,
-          countRoute: "/all-latest-blogs-count",
+          countRoute: "/all-latest-blogs-count"
         });
         setBlog(formateData);
       })
