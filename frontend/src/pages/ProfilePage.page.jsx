@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import AnimationWrapper from "../common/page-animation";
 import { UserContext } from "../App";
+import AboutUser from "../components/AboutUser";
 
 export const profileDataStructure = {
   personal_info: {
@@ -77,6 +78,7 @@ function ProfilePage() {
                       :""
                       }
                       </div>
+                      <AboutUser className="max-md:hidden" bio={bio} social_links={social_links} joinedAt={joinedAt}/>
                 </div>
 
             </section>    
