@@ -6,6 +6,7 @@ import Loader from '../components/Loader'
 import { getDay } from '../common/date'
 import BlogInteraction from '../components/BlogInteraction'
 import BlogPostCard from '../components/BlogPostCard'
+import BlogContent from '../components/BlogContent'
 
 
 export const blogStructure = {
@@ -32,10 +33,11 @@ function BlogPage() {
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog",{blog_id})
         .then(({data:{blog}})=>{
 
+            setBlog(blog)
+            
             axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs",{tag:blog.tags[0],limit:6,eliminate_blog:blog_id})
             .then(({data})=>{
                 setSimilarBlogs(data.blogs)
-                console.log(data.blogs);
             })
             setBlog(blog)
             setLoading(false)
@@ -80,6 +82,15 @@ function BlogPage() {
                     </div>
                 </div>
                 <BlogInteraction/>
+                <div className='my-12 font-gelasio blog-page-content'>
+                    {
+                        content[0].blocks.map((block,i)=>{
+                            return <div key={i} className='my-4 md:my-8'> 
+                                <BlogContent block={block}/>
+                            </div>
+                        })
+                    }
+                </div>
                 <BlogInteraction/>
                 {
                     similarBlogs!=null && similarBlogs.length ? 
