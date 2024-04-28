@@ -1,25 +1,29 @@
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import AnimationWrapper from '../common/page-animation'
 import Loader from '../components/Loader'
 import { getDay } from '../common/date'
+import BlogInteraction from '../components/BlogInteraction'
+import BlogPostCard from '../components/BlogPostCard'
 
 
 export const blogStructure = {
     title: '',
     des: '',
     content: [],
-    tags: [],
     author: { personal_info: { } },
     banner: "",
     publishedAt: ""
     }
 
+export const BlogContext=createContext({})
+
 function BlogPage() {
     let {blog_id}=useParams()
     const[blog,setBlog]=useState(blogStructure)
     const[loading,setLoading]=useState(true)
+    const[similarBlogs,setSimilarBlogs]=useState(null)
 
     let { title, content, banner, author: { personal_info: { fullname,
     username:author_username, profile_img } }, publishedAt } = blog;
@@ -27,6 +31,12 @@ function BlogPage() {
     const fetchBlog=()=>{
         axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/get-blog",{blog_id})
         .then(({data:{blog}})=>{
+
+            axios.post(import.meta.env.VITE_SERVER_DOMAIN + "/search-blogs",{tag:blog.tags[0],limit:6,eliminate_blog:blog_id})
+            .then(({data})=>{
+                setSimilarBlogs(data.blogs)
+                console.log(data.blogs);
+            })
             setBlog(blog)
             setLoading(false)
         })
@@ -37,13 +47,21 @@ function BlogPage() {
     }
 
     useEffect(()=>{
+        resetStates()
         fetchBlog()
-    },[])
+    },[blog_id])
+
+    const resetStates=()=>{
+        setBlog(blogStructure)
+        setLoading(true)
+        setSimilarBlogs(null)
+    }
   return (
     <AnimationWrapper>
         {
             loading ? <Loader/>
             :
+            <BlogContext.Provider value={{blog,setBlog}}>
             <div className='max-w-[900px] center py-10 max-lg:px-[5vw]'>
                 <img src={banner} className='aspect-video' />
                 <div className="mt-12">
@@ -61,8 +79,25 @@ function BlogPage() {
                         <p className='text-dark-grey opacity-75 max-sm:mt-6 max-sm:ml-12 max-sm:pl-5'>Published on {getDay(publishedAt)}</p>
                     </div>
                 </div>
-                
+                <BlogInteraction/>
+                <BlogInteraction/>
+                {
+                    similarBlogs!=null && similarBlogs.length ? 
+                    <>
+                        <h1 className='text-2xl mt-14 mb-10 font-medium'>Similar Blogs</h1>
+                        {
+                            similarBlogs.map((blog,i)=>{
+                                let{author:{personal_info}}=blog
+                                return <AnimationWrapper key={i} transition={{duration:1,delay:i*0.08}}>
+                                    <BlogPostCard content={blog} author={personal_info}/>
+                                </AnimationWrapper>
+                            })
+                        }
+                    </>
+                    :""
+                }
             </div>
+            </BlogContext.Provider>
         }
     </AnimationWrapper>
   )
