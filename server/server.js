@@ -313,9 +313,19 @@ server.post("/create-blog",verifyJWT,(req,res)=>{
     }
     tags=tags.map(tag=>tag.toLowerCase())
 
-    let blog_id = title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, "-").trim() + nanoid();
+    let blog_id = id || title.replace(/[^a-zA-Z0-9]/g, ' ').replace(/\s+/g, "-").trim() + nanoid();
 
-    let blog=new Blog({
+    if(id){
+      Blog.findOneAndUpdate({blog_id},{title,des,banner,content,tags,draft: draft ? draft:false})
+      .then(()=>{
+        return res.status(200).json({id:blog_id})
+      })
+      .catch(err=>{
+          return res.status(500).json({error:err.message})
+      })
+    }
+    else{
+      let blog=new Blog({
         title,des,banner,content,tags,author:authorId,blog_id,draft:Boolean(draft)
     })
     blog.save().then(blog=>{
@@ -331,11 +341,12 @@ server.post("/create-blog",verifyJWT,(req,res)=>{
     .catch(err=>{
       return res.status(500).json({err:err.message})
     })
+    }
 })
 
 server.post("/get-blog",(req, res)=>{
-  let {blog_id} = req.body;
-  let incrementVal = 1;
+  let {blog_id,draft,mode} = req.body;
+  let incrementVal = mode!= 'edit' ? 1:0
   Blog.findOneAndUpdate({ blog_id }, { $inc : { "activity.total_reads": incrementVal }})
   .populate("author", "personal_info.fullname personal_info.username personal_info.profile_img")
   .select("title des content banner activity publishedAt blog_id tags")
@@ -346,6 +357,9 @@ server.post("/get-blog",(req, res)=>{
     .catch(err=>{
       return res.status(500).json({ error:err.message });
     })
+    if(blog.draft && !draft){
+      return res.status(500).json({error:"you can not access draft blog"})
+    }  
   return res.status(200).json({ blog });
   })
   .catch(err=>{ 

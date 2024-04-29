@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import logo from "../imgs/logo.png";
 import AnimationWrapper from "../common/page-animation";
 import defaultBanner from "../imgs/blog banner.png";
@@ -12,13 +12,16 @@ import { UserContext } from "../App";
 function BlogEditor() {
   let {
     blog,
-    blog: { title, banner, content, tags, des },
+    blog:{title,banner, content, tags, des },
     setBlog,
     textEditor,
     setTextEditor,
     setEditorState,
   } = useContext(EditorContext);
   let navigate = useNavigate();
+
+  let{blog_id}=useParams()
+
   let {
     userAuth: { access_token },
   } = useContext(UserContext);
@@ -27,7 +30,7 @@ function BlogEditor() {
       setTextEditor(
         new EditorJS({
           holderId: "textEditor",
-          data: content,
+          data: Array.isArray(content) ? content[0] :content,
           tools: Tools,
           placeholder: "Let's write an awesome story",
         })
@@ -61,6 +64,7 @@ function BlogEditor() {
     // if(!banner.length){
     //     return toast.error("Upload a blog banner to publish it")
     // }
+
     if (!title.length) {
       return toast.error("Write blog title to publish it");
     }
@@ -101,7 +105,7 @@ function BlogEditor() {
             draft: true,
           };
         axios
-          .post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", blogObj, {
+          .post(import.meta.env.VITE_SERVER_DOMAIN + "/create-blog", {...blogObj,id:blog_id},{
             headers: {
               Authorization: `Bearer ${access_token}`,
             },

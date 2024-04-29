@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar"
 import UserAuthForm from "./pages/UserAuthForm.page";
 import { createContext, useEffect, useState } from "react";
 import { lookInSession } from "./common/session";
-import Editor from "./pages/editor.pages";
+import Editor from "./pages/Editor.pages";
 import HomePage from "./pages/home.page";
 import SearchPage from "./pages/SearchPage";
 import PageNotFound from "./pages/404.page";
@@ -22,6 +22,7 @@ const App = () => {
         <UserContext.Provider value={{userAuth,setUserAuth}}>
         <Routes>
             <Route path="/editor" element={<Editor/>}/>
+            <Route path="/editor/:blog_id" element={<Editor/>}/>
             <Route path="/" element={<Navbar/>}>
                 <Route index element={<HomePage/>}/>
                 <Route path="signin" element={<UserAuthForm type="sign-in"/>} />
