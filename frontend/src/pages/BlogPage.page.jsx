@@ -25,6 +25,7 @@ function BlogPage() {
     const[blog,setBlog]=useState(blogStructure)
     const[loading,setLoading]=useState(true)
     const[similarBlogs,setSimilarBlogs]=useState(null)
+    const[isLikedByUser,setLikedByUser]=useState(false)
 
     let { title, content, banner, author: { personal_info: { fullname,
     username:author_username, profile_img } }, publishedAt } = blog;
@@ -63,7 +64,7 @@ function BlogPage() {
         {
             loading ? <Loader/>
             :
-            <BlogContext.Provider value={{blog,setBlog}}>
+            <BlogContext.Provider value={{blog,setBlog,isLikedByUser,setLikedByUser}}>
             <div className='max-w-[900px] center py-10 max-lg:px-[5vw]'>
                 <img src={banner} className='aspect-video' />
                 <div className="mt-12">
