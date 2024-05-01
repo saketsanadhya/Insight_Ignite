@@ -39,6 +39,7 @@ function CommentField({action,index=undefined,replyingTo=undefined,setReplying})
                 commentsArr[index].isReplyLoaded=true
                 commentsArr.splice(index+1,0,data)
                 newCommentArr=commentsArr
+                setReplying(false)
             }
             else{
                 data.childrenLevel=0
