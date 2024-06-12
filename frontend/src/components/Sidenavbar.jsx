@@ -8,7 +8,7 @@ function Sidenav() {
   } = useContext(UserContext);
 
 
-  let page=location.pathname.split("/")[2]
+  let page = location.pathname.split("/")[2];
 
   let [pageState, setPageState] = useState(page.replace('-',' '));
   let[showSideNav,setShowSideNav]=useState(false)

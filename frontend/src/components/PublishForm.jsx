@@ -83,7 +83,7 @@ function PublishForm() {
     .then(()=>{
       e.target.classList.remove('disable')
       toast.dismiss(loadingToast)
-      toast.success("Published")
+      toast.success("Published 👍")
       setTimeout(()=>{
           navigate("/")
       },500)
@@ -153,7 +153,7 @@ function PublishForm() {
               return <Tag tag={tag} key={i} />;
             })}
           </div>
-          <p className="mt-1 mb-4 text-dark-grey text-right">{tagLimit-tags.length} Task left</p>
+          <p className="mt-1 mb-4 text-dark-grey text-right">{tagLimit-tags.length} Tags left</p>
            <button className="btn-dark px-8" onClick={publishBlog}>Publish</button>
         </div>
       </section>

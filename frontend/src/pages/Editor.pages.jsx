@@ -44,7 +44,7 @@ function Editor() {
         access_token===null ? <Navigate to="/signin"/>
          :
           loading ? <Loader/> :
-         editorState=="editor"?<BlogEditor/>:<PublishForm/>
+         editorState== "editor" ? <BlogEditor/>:<PublishForm/>
         }
         </EditorContext.Provider>
   )

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import logo from "../imgs/logo.png";
 import AnimationWrapper from "../common/page-animation";
@@ -9,18 +9,13 @@ import EditorJS from "@editorjs/editorjs";
 import { Tools } from "./Tools";
 import axios from "axios";
 import { UserContext } from "../App";
+import { uploadImage } from "../common/aws";
 function BlogEditor() {
-  let {
-    blog,
-    blog:{title,banner, content, tags, des },
-    setBlog,
-    textEditor,
-    setTextEditor,
-    setEditorState,
-  } = useContext(EditorContext);
-  let navigate = useNavigate();
 
+  let {blog, blog:{title ,banner, content, tags, des },setBlog,textEditor,setTextEditor,setEditorState}=useContext(EditorContext);
+  let navigate = useNavigate();
   let{blog_id}=useParams()
+
 
   let {
     userAuth: { access_token },
@@ -40,7 +35,23 @@ function BlogEditor() {
 
   const handleBannerUpload = (e) => {
     let img = e.target.files[0];
-    console.log(img);
+    if(img){
+
+      let loadingToast=toast.loading("Uploading...")
+
+      uploadImage(img).then((url)=>{
+        if(url){
+          toast.dismiss(loadingToast)
+          toast.success("Uploaded 👍")
+          
+          setBlog({...blog,banner:url})
+        }
+      })
+      .catch(err=>{
+        toast.dismiss(loadingToast)
+        return toast.error(err)
+      })
+    }
   };
 
   const handleTitleKeyDown = (e) => {
@@ -61,9 +72,9 @@ function BlogEditor() {
     img.src = defaultBanner;
   };
   const handlePublishEvent = () => {
-    // if(!banner.length){
-    //     return toast.error("Upload a blog banner to publish it")
-    // }
+    if(!banner.length){
+        return toast.error("Upload a blog banner to publish it")
+    }
 
     if (!title.length) {
       return toast.error("Write blog title to publish it");
@@ -95,7 +106,7 @@ function BlogEditor() {
     e.target.classList.add("disable");
 
     if (textEditor.isReady) {
-      textEditor.save().then((content) => {
+      textEditor.save().then(content => {
         let blogObj = {
             title,
             banner,
@@ -149,7 +160,7 @@ function BlogEditor() {
           <div className="mx-auto max-w-[900px] w-full">
             <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-grey">
               <label htmlFor="uploadBanner">
-                <img src={banner} className="z-20" onError={handleError} />
+                <img src={banner} className="z-20" onError={handleError}/>
                 <input
                   type="file"
                   id="uploadBanner"

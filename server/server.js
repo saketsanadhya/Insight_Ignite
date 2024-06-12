@@ -8,6 +8,7 @@ import cors from "cors";
 import admin from "firebase-admin";
 import serviceAccountKey from "./blogging-website-18f67-firebase-adminsdk-wkkxo-8b757b6c0d.json" assert {type:"json"}
 import { getAuth } from "firebase-admin/auth";
+import aws from "aws-sdk"
 
 import User from "./Schema/User.js";
 import Blog from "./Schema/Blog.js"
@@ -27,6 +28,23 @@ mongoose.connect(process.env.DB_LOCATION, {
 });
 server.use(express.json());
 server.use(cors());
+
+const s3=new aws.S3({
+  region:'ap-south-1',
+  accessKeyId:process.env.AWS_ACCESS_KEY,
+  secretAccessKey:process.env.AWS_SECRET_ACCESS_KEY
+})
+
+const generateUploadURL=async()=>{
+  const date=new Date()
+  const imageName=`${nanoid()}-${date.getTime()}.jpeg`
+  return await s3.getSignedUrlPromise('putObject',{
+    Bucket:'blogging-website-personal',
+    Key:imageName,
+    Expires:1000,
+    ContentType:"image/jpeg"
+  })
+}
 
 const generateUsername = async (email) => {
   let username = email.split("@")[0];
@@ -64,6 +82,14 @@ const verifyJWT=(req,res,next)=>{
       next()
     })
 }
+
+server.get("/get-upload-url",(req,res)=>{
+  generateUploadURL().then(url=>res.status(200).json({uploadURL:url}))
+  .catch(err=>{
+    console.log(err.message);
+    return res.status(500).json({error:err.message})
+  })
+})
 
 server.post("/signup", (req, res) => {
   let { fullname, email, password } = req.body;
@@ -334,9 +360,68 @@ server.post("/get-profile",(req,res)=>{
   })
 })
 
+server.post("/update-profile-img",verifyJWT,(req,res)=>{
+  let {url} =req.body
+  User.findOneAndUpdate({_id:req.user} , {"personal_info.profile_img":url})
+  .then(()=>{
+    return res.status(200).json({profile_img:url})
+  })
+  .catch(err=>{
+    return res.status(500).json({error:err.message})
+  })
+})
+
+server.post("/update-profile",verifyJWT,(req,res)=>{
+  let { username,bio,social_links } =req.body
+  let bioLimit=150
+
+  if(username.length<3){
+    return res.status(403).json({error:"Username should be at least 3 letters long"})
+  }
+  if(bio.length > bioLimit){
+    return res.status(403).json({error:`Bio should not be more than ${bioLimit} characters`})
+  }
+
+  let socialLinksArr = Object.keys(social_links)
+
+  try{  
+    for(let i=0;i<socialLinksArr.length;i++){
+      if(social_links[socialLinksArr[i]].length){
+        let hostname=new URL(social_links[socialLinksArr[i]]).hostname
+
+        if(!hostname.includes(`${socialLinksArr[i].com}`) && socialLinksArr[i]!='website'){
+          return res.status(403).json({error:`${socialLinksArr[i]} link is invalid. You must enter full links`})
+        }
+
+      }
+    }
+  }catch(err){
+    return res.status(500).json({error:"You must provide full social links with http(s) included"})
+  }
+
+  let updateObj={
+    "personal_info.username":username,
+    "personal_info.bio":bio,
+    social_links
+  }
+  User.findOneAndUpdate({_id:req.user},updateObj,{
+    runValidators:true
+  })
+  .then(()=>{
+    return res.status(200).json({username})
+  })
+  .catch(err=>{
+    if(err.code==11000){
+      return res.status(409).json({error:"username is already taken"})
+    }
+    return res.status(500).json({error:err.message})
+  })
+
+})
+
 server.post("/create-blog",verifyJWT,(req,res)=>{
     let authorId=req.user
-    let{title,des,banner,tags,content,draft}=req.body
+    let{title,des,banner,tags,content,draft,id}=req.body
     if(!title.length){
       return res.status(403).json({error:"You must provide a title"})
     }
@@ -344,9 +429,9 @@ server.post("/create-blog",verifyJWT,(req,res)=>{
       if(!des.length || des.length > 200){
         return res.status(403).json({ error: "You must provide blog description under 200 characters" });
       }
-      // if(!banner.length){
-      //   return res.status(403).json({ error: "You must provide blog banner to publish it" });
-      // }
+      if(!banner.length){
+        return res.status(403).json({ error: "You must provide blog banner to publish it" });
+      }
       if(!content.blocks.length){
         return res.status(403).json({ error: "There must be some blog content to publish it" });
       }
@@ -373,15 +458,17 @@ server.post("/create-blog",verifyJWT,(req,res)=>{
     })
     blog.save().then(blog=>{
       let incrementVal=draft?0:1
-      user.findOneAndUpdate({_id:authorId},{$inc:{"account_info.total_posts":incrementVal},$push:{"blogs":blog._id}})
+      User.findOneAndUpdate({_id:authorId},{$inc:{"account_info.total_posts":incrementVal},$push:{"blogs":blog._id}})
       .then(user=>{
-        return res.status(200).json({id:blog.blog.blog_id})
+        return res.status(200).json({id:blog.blog_id})
       })
       .catch(err=>{
+        console.log(err)
         return res.status(500).json({error:"Failed to update total posts number"})
       })
     })
     .catch(err=>{
+      console.log(err)
       return res.status(500).json({err:err.message})
     })
     }
