@@ -1,7 +1,19 @@
-POST http://localhost:3000/get-blog
+
+
+# POST http://localhost:3000/change-password
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjhhZTI4YTlhYjAyYzRkMGI0YmEwNCIsImlhdCI6MTcxODE0Mjg2MX0.iXKiKBpC16YHoQPRBXDZyhKiY397Ca0wJpDdaZ9jjXM
+
+# {
+#     "currentPassword":"Kinshu@1103",
+#     "newPassword":"Kinshu@11"
+# }
+
+
+POST http://localhost:3000/signin
 Content-Type: application/json
 
 {
-    "blog_id":"saketmMtNd-_xqnz80r7zTR9Nl"
+    "email":"saketsanadhya2003@gmail.com",
+    "password":"Kinshu@11"
 }
-
