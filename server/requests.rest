@@ -9,11 +9,14 @@
 #     "newPassword":"Kinshu@11"
 # }
 
+# POST http://localhost:3000/signin
+# Content-Type: application/json
 
-POST http://localhost:3000/signin
-Content-Type: application/json
+# {
+#     "email":"saketsanadhya2003@gmail.com",
+#     "password":"Kinshu@11"
+# }
 
-{
-    "email":"saketsanadhya2003@gmail.com",
-    "password":"Kinshu@11"
-}
+GET http://localhost:3000/new-notification
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjhhZTI4YTlhYjAyYzRkMGI0YmEwNCIsImlhdCI6MTcxODI4MDEwNX0.w3Pl6kFBe1tz07Y137Xkh1BP-gYKi34ptAsYtyqzCsM
+
