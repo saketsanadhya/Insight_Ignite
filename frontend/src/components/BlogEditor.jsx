@@ -17,9 +17,7 @@ function BlogEditor() {
   let{blog_id}=useParams()
 
 
-  let {
-    userAuth: { access_token },
-  } = useContext(UserContext);
+  let { userAuth: { access_token }} = useContext(UserContext);
   useEffect(() => {
     if (!textEditor.isReady) {
       setTextEditor(
@@ -60,6 +58,8 @@ function BlogEditor() {
       e.preventDefault();
     }
   };
+
+
   const handleTitleChange = (e) => {
     let input = e.target;
     input.style.height = "auto";
@@ -67,10 +67,14 @@ function BlogEditor() {
     setBlog({ ...blog, title: input.value });
     console.log(title);
   };
+
+
   const handleError = (e) => {
     let img = e.target;
     img.src = defaultBanner;
   };
+
+
   const handlePublishEvent = () => {
     if(!banner.length){
         return toast.error("Upload a blog banner to publish it")
@@ -95,6 +99,8 @@ function BlogEditor() {
         });
     }
   };
+
+
   const handleSaveDraft = (e) => {
     if (e.target.className.includes("disable")) {
       return;
@@ -122,11 +128,13 @@ function BlogEditor() {
             },
           })
           .then(() => {
+            
             e.target.classList.remove("disable");
             toast.dismiss(loadingToast);
             toast.success("Saved");
+
             setTimeout(() => {
-              navigate("/");
+              navigate("/dashboard/blogs?tab=draft");
             }, 500);
           })
           .catch(({ response }) => {
