@@ -1,22 +1,8 @@
+POST http://localhost:3000/user-written-blogs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjhhZTI4YTlhYjAyYzRkMGI0YmEwNCIsImlhdCI6MTcxODM2NjcyN30.OYC4MortL3bsdtpwJJWUw9xcppa54C1pZnzur9APp0s
+Content-Type: application/json
 
-
-# POST http://localhost:3000/change-password
-# Content-Type: application/json
-# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjhhZTI4YTlhYjAyYzRkMGI0YmEwNCIsImlhdCI6MTcxODE0Mjg2MX0.iXKiKBpC16YHoQPRBXDZyhKiY397Ca0wJpDdaZ9jjXM
-
-# {
-#     "currentPassword":"Kinshu@1103",
-#     "newPassword":"Kinshu@11"
-# }
-
-# POST http://localhost:3000/signin
-# Content-Type: application/json
-
-# {
-#     "email":"saketsanadhya2003@gmail.com",
-#     "password":"Kinshu@11"
-# }
-
-GET http://localhost:3000/new-notification
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NjhhZTI4YTlhYjAyYzRkMGI0YmEwNCIsImlhdCI6MTcxODI4MDEwNX0.w3Pl6kFBe1tz07Y137Xkh1BP-gYKi34ptAsYtyqzCsM
-
+{
+    "page":1,
+    "draft":false
+}
