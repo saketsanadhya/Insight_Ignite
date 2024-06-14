@@ -64,7 +64,7 @@ function Sidenav() {
               Blogs
             </NavLink>
             <NavLink
-              to="/dashboard/notification"
+              to="/dashboard/notifications"
               onClick={(e) => setPageState(e.target.innerText)}
               className="sidebar-link"
             >
@@ -76,7 +76,7 @@ function Sidenav() {
                 :""
               }
               </div>
-              Notification
+              Notifications
             </NavLink>
             <NavLink
               to="/editor"
